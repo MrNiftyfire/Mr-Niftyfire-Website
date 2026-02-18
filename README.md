@@ -7,8 +7,8 @@
 
 <p align="center">
 <center>
-  <a href="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20Website.html">🏠 <strong>Home</strong> </a> |
-  <a href="https://www.youtube.com/@MrNiftyfire">🎮 <strong>Youtube</strong> </a> </center>
+  |<a href="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20Website.html">🏠 <strong>Home</strong> </a> |
+  <a href="https://www.youtube.com/@MrNiftyfire">🎮 <strong>Youtube</strong> </a>| </center>
 </p>
 
 **The Mr Niftyfire Website** is a website where I share information about me, my YouTube channel, my religion and all the different games and topics I make videos about. You’ll find pages for Minecraft, Roblox, Blooket, Duolingo, Geometry Dash, Chess, and more. Each page includes pictures, fun sections, and sometimes hidden secrets.
@@ -16,7 +16,7 @@
 ## 💫 Features & Pages
 
 - A home page introducing me and my content.
-- Fun sections like **“Fun Bobious Facts!”**
+- Fun sections with **“Fun Facts!”**
 - A YouTube trailer section.
 - Buttons linking to different game-themed pages.
 - Images and previews of other website sections.
@@ -33,6 +33,7 @@ The website includes (or will include) pages for:
 - Among Us  
 - Prodigy  
 - Pocket Champs  
+- Christianity
 - “Uncommon Videos”  
 - And more as the site grows
 
@@ -80,8 +81,8 @@ Stay updated and get support — scan or click:
 <table align="center" style="border-collapse: collapse; margin: 16px auto; width: 100%; max-width: 520px;">
 <center>   <tr>
     <td align="center" style="padding: 8px; width: 25%;">
-      <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">🎮 Youtube</div>
-      <img src="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20QR%20Code.png" alt="DingTalk QR Code" width="100" style="border-radius: 8px; border: 1px solid #ddd;">
+      <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">Youtube</div>
+      <img src="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20QR%20Code.png" alt="Mr Niftyfire QR Code" width="100" style="border-radius: 8px; border: 1px solid #ddd;">
     </td>
 </center>
   </tr>
