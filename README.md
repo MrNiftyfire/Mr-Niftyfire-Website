@@ -8,7 +8,8 @@
 <p align="center">
 <center>
   <a href="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20Website.html">🏠 <strong>Home</strong> </a> |
-  <a href="https://www.youtube.com/@MrNiftyfire">🎮 <strong>Youtube</strong> </a> </center>
+  <a href="https://www.youtube.com/@MrNiftyfire">🎮 <strong>Youtube</strong> </a>
+   </center>
 </p>
 
 **The Mr Niftyfire Website** is a website where I share information about me, my YouTube channel, my religion and all the different games and topics I make videos about. You’ll find pages for Minecraft, Roblox, Blooket, Duolingo, Geometry Dash, Chess, and more. Each page includes pictures, fun sections, and sometimes hidden secrets.
