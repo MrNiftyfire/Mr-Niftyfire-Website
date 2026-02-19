@@ -139,6 +139,112 @@
     transform: scale(1.15);
     box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
   }
+
+ /* Chatbot toggle */
+#chatbot-toggle {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background: #000000;
+  color: white;
+  font-size: 22px;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10000;
+  transition: transform 0.2s ease;
+}
+
+#chatbot-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Chatbot window */
+#chatbot {
+  position: fixed;
+  left: 20px;
+  bottom: 80px;
+  width: 260px;
+  height: 340px;
+  background: #111;
+  color: white;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  z-index: 10000;
+
+  /* animation */
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#chatbot.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+#chat-header {
+  background: #000000;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 14px 14px 0 0;
+}
+
+/* Messages */
+#chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Chat bubbles */
+.chat-bubble {
+  max-width: 85%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  animation: pop 0.2s ease;
+}
+
+.user {
+  align-self: flex-end;
+  background: #2d7cff;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #333;
+}
+
+/* Input */
+#chat-input {
+  border: none;
+  padding: 10px;
+  outline: none;
+  border-radius: 0 0 14px 14px;
+}
+
+/* Bubble pop animation */
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
 </style>
 
 
@@ -246,6 +352,16 @@
   <iframe width="560" height="315" src="https://www.youtube.com/embed/wpEmsaYmwwk?si=S3HQrKjfD-hmCqse" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   <p><center>This will help you know what is on each page</center></p>
 </section>
+</style>
+
+<div id="chatbot-toggle">💬</div>
+
+<!-- CHATBOT -->
+<div id="chatbot">
+  <div id="chat-header">Site Helper</div>
+  <div id="chat-messages"></div>
+  <input id="chat-input" placeholder="Ask me something..." />
+</div>
 
 <section id="more-trailer-info" style="background-image: url('Website\ Sneak\ Peaks\ \(Blurred\).png');">
   <h1 style="color: white;"><u>Website Sneak Peaks</u></h1>
