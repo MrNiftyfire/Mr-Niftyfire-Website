@@ -1,4 +1,4 @@
-// === Image Switcher (not affected by other buttons) ===
+
 
 const trailerImages = [
   "Minecraft Achievements.png",
