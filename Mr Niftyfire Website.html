@@ -1,665 +1,719 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="stylesheet.css">
-  <meta charset="UTF-8">
-  <title>Home</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Fredoka', sans-serif;
-      background-image: url('Minecraft Background (For Minecraft Page).png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: white;
-      text-shadow: 2px 2px 4px black;
+// === Image Switcher (not affected by other buttons) ===
+
+const trailerImages = [
+  "Minecraft Achievements.png",
+  "Blooket Calculator.png",
+  "Chess Achievements.png",
+  "Blooket Blooks.png",
+  "Duolingo Achievements.png",
+  "MSM.png"
+];
+let isChatFocused = false;
+
+let currentTrailerIndex = 0;
+const trailerImageElement = document.getElementById("swapImage");
+const musicButton = document.getElementById("music-toggle"); // music button reference
+
+if (trailerImageElement) {
+  trailerImageElement.style.cursor = "pointer";
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    // ✅ Ignore clicks on other buttons, menus, or the music button
+    if (
+      target.closest(".menu-bar") ||          // menu area
+      target.closest(".top-menu") ||          // top menu bar
+      target.closest("#music-toggle") ||      // music toggle button
+      target.closest("button") ||             // any generic button
+      target.tagName === "A"                  // any links
+    ) {
+      return; // ignore
     }
 
-    .top-menu {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      background-color: #111;
-      padding: 10px 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-    }
+    // ✅ Only trigger if clicking on the image itself
+    if (target === trailerImageElement) {
+      trailerImageElement.style.transition = "opacity 0.4s ease";
+      trailerImageElement.style.opacity = "0"; // fade out
 
-    .top-menu summary {
-      list-style: none;
-      cursor: pointer;
-      text-align: center;
-      color: white;
-      transition: 0.3s;
-    }
-
-    .top-menu summary:hover {
-      color: #ffffff;
-      text-shadow: 0 0 8px #ffffff, 0 0 16px #ffffff;
-    }
-
-    .top-menu img {
-      width: 30px;
-      height: 30px;
-      display: block;
-      margin: 0 auto 5px;
-      transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .top-menu summary:hover img {
-      filter: brightness(1.3);
-      transform: scale(1.15); /* grows outward */
-      box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
-    }
-
-    /* Dropdown animation */
-    details ul {
-      list-style: none; /* removes dot */
-      padding: 0;
-      margin: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease-out;
-    }
-
-    details[open] ul {
-      max-height: 200px;
-      transition: max-height 0.4s ease-in;
-    }
-
-    .top-menu a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 5px 0;
-      transition: 0.3s;
-    }
-
-    .top-menu a:hover {
-      color: #ffffff;
-      text-shadow: 0 0 8px #ffffff, 0 0 16px #ffffff;
-    }
-
-    body::before {
-      content: "";
-      display: block;
-      height: 60px;
-    }
-  </style>
-</head>
-<audio id="bg-music" loop>
-  <source src="Excitebike Arena - Mario Kart 8 Deluxe (OST).mp3" type="audio/mpeg">
-</audio>
-
-<button id="music-toggle">
-  🎵 Play Music
-</button>
-
-<script>
-  const music = document.getElementById("bg-music");
-  const toggleBtn = document.getElementById("music-toggle");
-
-  toggleBtn.addEventListener("click", () => {
-    if (music.paused) {
-      music.play();
-      toggleBtn.innerText = "🔇 Pause Music";
-    } else {
-      music.pause();
-      toggleBtn.innerText = "🎵 Play Music";
+      setTimeout(() => {
+        currentTrailerIndex = (currentTrailerIndex + 1) % trailerImages.length;
+        trailerImageElement.src = trailerImages[currentTrailerIndex];
+        trailerImageElement.style.opacity = "1"; // fade in
+      }, 400);
     }
   });
-</script>
+}
 
-<style>
-  #music-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #111;
-    border: 2px solid white;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    text-shadow: 2px 2px 4px black;
-    box-shadow: 0 0 10px transparent;
-    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
-    z-index: 2000;
+window.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("flappyCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = 300;
+  canvas.height = 450;
+
+  // === Images ===
+  const bgImg = new Image();
+  bgImg.src = "Flappy Bird Background (Game).png";
+  const birdImg = new Image();
+  birdImg.src = "Flappy Bird.png";
+  const upPipeImg = new Image();
+  upPipeImg.src = "Up Pipe.png"; // bottom pipe
+  const downPipeImg = new Image();
+  downPipeImg.src = "Down Pipe.png"; // top pipe
+  const groundImg = new Image();
+  groundImg.src = "Grass.png";
+
+  // === Sounds ===
+  const flySound = new Audio("Flappy Bird Fly.mp3");
+  const scoreSound = new Audio("Flappy Bird Score.mp3");
+  const dieSound = new Audio("Flappy Bird Die.mp3");
+
+  // === Game Variables ===
+  let birdX = 70;
+  let birdY = 150;
+  let gravity = 0.4;
+  let lift = -7;
+  let velocity = 0;
+  let pipes = [];
+  let frame = 0;
+  let score = 0;
+  const groundHeight = 60;
+  const pipeGap = 120;
+  let gameOver = false;
+  let gameStarted = false;
+
+  // === Add Pipe Pair ===
+  function addPipe() {
+    const topHeight = Math.floor(Math.random() * 120) + 50;
+    pipes.push({
+      x: canvas.width,
+      top: topHeight,
+      bottom: topHeight + pipeGap,
+      passed: false
+    });
   }
 
-  /* Glow to match menu icons */
-  #music-toggle:hover {
-    filter: brightness(1.3);
-    transform: scale(1.15);
-    box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+  // === Restart ===
+  function restartGame() {
+    birdY = 150;
+    velocity = 0;
+    pipes = [];
+    frame = 0;
+    score = 0;
+    gameOver = false;
+    gameStarted = true;
+    addPipe();
+    loop();
   }
 
- /* Chatbot toggle */
-#chatbot-toggle {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: #000000;
-  color: white;
-  font-size: 22px;
-  padding: 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10000;
-  transition: transform 0.2s ease;
-}
-
-#chatbot-toggle:hover {
-  transform: scale(1.1);
-}
-
-/* Chatbot window */
-#chatbot {
-  position: fixed;
-  left: 20px;
-  bottom: 80px;
-  width: 260px;
-  height: 340px;
-  background: #111;
-  color: white;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  font-family: Arial, sans-serif;
-  z-index: 10000;
-
-  /* animation */
-  opacity: 0;
-  transform: translateY(20px) scale(0.95);
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-#chatbot.open {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-#chat-header {
-  background: #000000;
-  padding: 10px;
-  font-weight: bold;
-  text-align: center;
-  border-radius: 14px 14px 0 0;
-}
-
-/* Messages */
-#chat-messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Chat bubbles */
-.chat-bubble {
-  max-width: 85%;
-  padding: 8px 10px;
-  border-radius: 12px;
-  animation: pop 0.2s ease;
-}
-
-.user {
-  align-self: flex-end;
-  background: #2d7cff;
-}
-
-.bot {
-  align-self: flex-start;
-  background: #333;
-}
-
-/* Input */
-#chat-input {
-  border: none;
-  padding: 10px;
-  outline: none;
-  border-radius: 0 0 14px 14px;
-}
-
-/* Bubble pop animation */
-@keyframes pop {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
+  function handleInput() {
+    if (!gameStarted) {
+      restartGame();
+    } else if (gameOver) {
+      restartGame();
+    } else {
+      velocity = lift;
+      flySound.currentTime = 0;
+      flySound.play();
+    }
   }
-  to {
-    transform: scale(1);
-    opacity: 1;
+
+  // === Ignore Menu Bar Clicks ===
+  function isClickOnMenuBar(target) {
+    return target.closest && target.closest(".menu-bar");
   }
-}
+
+  let touchJustTriggered = false;
+
+  document.addEventListener("click", e => {
+    if (touchJustTriggered) {
+      touchJustTriggered = false;
+      return;
+    }
+    if (isClickOnMenuBar(e.target)) return;
+    handleInput();
+  });
+
+  document.addEventListener("touchstart", e => {
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (isClickOnMenuBar(element)) return;
+    touchJustTriggered = true;
+    handleInput();
+  });
+
+document.addEventListener("keydown", e => {
+  if (isChatFocused) return; // ✅ ignore ALL keys while typing
+
+  if (e.code === "Space") {
+    e.preventDefault();
+    handleInput();
+  }
+});
 
 
-</style>
+
+  // === Main Loop ===
+  function loop() {
+    if (gameOver) return;
+    frame++;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+    velocity += gravity;
+    birdY += velocity;
+
+    // === Top of screen reset ===
+    if (birdY < -30) {
+      dieSound.currentTime = 0;
+      dieSound.play();
+      restartGame();
+      return;
+    }
+
+    if (frame % 100 === 0) addPipe();
+
+    // === Pipes ===
+    for (let i = pipes.length - 1; i >= 0; i--) {
+      const p = pipes[i];
+      p.x -= 2;
+
+      // Top pipe (Down Pipe.png)
+      ctx.drawImage(downPipeImg, p.x, 0, 50, p.top);
+
+      // Bottom pipe (Up Pipe.png)
+      ctx.drawImage(
+        upPipeImg,
+        p.x,
+        p.bottom,
+        50,
+        canvas.height - p.bottom - groundHeight
+      );
+
+      // Collision check
+      if (
+        birdX + 30 > p.x &&
+        birdX < p.x + 50 &&
+        (birdY < p.top || birdY + 24 > p.bottom)
+      ) {
+        dieSound.currentTime = 0;
+        dieSound.play();
+        gameOver = true;
+      }
+
+      // Scoring (once per tunnel)
+      if (!p.passed && p.x + 50 < birdX) {
+        score++;
+        p.passed = true;
+        scoreSound.currentTime = 0;
+        scoreSound.play();
+      }
+
+      // Remove offscreen pipes
+      if (p.x + 50 < 0) {
+        pipes.splice(i, 1);
+      }
+    }
+
+    // === Ground ===
+    for (let i = 0; i < canvas.width; i += 80) {
+      ctx.drawImage(groundImg, i, canvas.height - groundHeight, 80, groundHeight);
+    }
+
+    // === Bird ===
+    ctx.drawImage(birdImg, birdX, birdY, 30, 24);
+
+    // === Ground Collision ===
+    if (birdY + 24 >= canvas.height - groundHeight) {
+      dieSound.currentTime = 0;
+      dieSound.play();
+      gameOver = true;
+    }
+
+    // === Score ===
+    ctx.fillStyle = "white";
+    ctx.font = "20px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Score: " + score, canvas.width / 2, 40);
+
+    // === Game Over Screen ===
+    if (gameOver) {
+      ctx.fillStyle = "rgba(0,0,0,0.5)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.font = "28px Fredoka, sans-serif";
+      ctx.fillText("Game Over!", canvas.width / 2, 200);
+      ctx.font = "16px Fredoka, sans-serif";
+      ctx.fillText("Tap, or Press Space to Start", canvas.width / 2, 230);
+      return;
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  function drawStartScreen() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < canvas.width; i += 80) {
+      ctx.drawImage(groundImg, i, canvas.height - groundHeight, 80, groundHeight);
+    }
+    ctx.drawImage(birdImg, birdX, birdY, 30, 24);
+    ctx.fillStyle = "white";
+    ctx.font = "22px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Tap, or Press Space to Start", canvas.width / 2, 220);
+  }
+
+  drawStartScreen();
+});
+ 
+
+/// ======================================================================
+// 🔥 CHATBOT SYSTEM — PRO MODE
+// Strict Mode • Smart Mode • Levenshtein • Suggestions • Typing FX
+// ======================================================================
 
 
-<body>
-<script src="Javascript.js" defer></script>
 
-<div class="menu-bar">
-  <div class="top-menu">
-    <details>
-      <summary><img src="PFP New (Small).png" alt="PFP (Small)">Home</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Mr-Niftyfire-Website/Mr%20Niftyfire%20Website.html">Home Page</a></li></ul>
-    </details>
+// =============================
+// 🎛 ELEMENT REFERENCES
+// =============================
 
-    <details>
-      <summary><img src="LEGA (Small).png" alt="LEGO">LEGO</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Lego-Stop-Motion/Lego%20Stop-Motion.html">LEGO Stop Motion</a></li></ul>
-    </details>
+const chatToggle   = document.getElementById("chatbot-toggle");
+const chatbot      = document.getElementById("chatbot");
+const chatInput    = document.getElementById("chat-input");
+const chatMessages = document.getElementById("chat-messages");
 
-    <details>
-      <summary><img src="Roblox (Small).png" alt="Roblox">Roblox</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Roblox-Site/Roblox.html">Roblox Page</a></li></ul>
-    </details>
 
-    <details>
-      <summary><img src="GD (Small).png" alt="GD">Geometry Dash</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/GD-Site/GD%20Site.html">GD Page</a></li></ul>
-    </details>
 
-    <details>
-      <summary><img src="Duolingo (Small).png" alt="Duolingo">Duolingo</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Duolingo-Site/Duolingo.html">Duolingo Page</a></li></ul>
-            <ul><li><a href="https://mrniftyfire.github.io/All-Duolingo-Achievement-Icons/Get%20Every%20Duolingo%20Achievement.html">Duolingo Achievements</a></li></ul>
-    </details>
+// =============================
+// ⚙ SETTINGS
+// =============================
 
-    <details>
-      <summary><img src="Blooket (Small).png" alt="Blooket">Blooket</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Blooket-Site/Blooket%20Site.html">Blooket Page</a></li></ul>
-            <ul><li><a href="https://mrniftyfire.github.io/HTGEB/HTGEB.html">Get Every Blook</a></li></ul>
-      <ul><li><a href="https://mrniftyfire.github.io/Blooket-Calculator/Blooket%20Calculator">Blooket Calculator</a></li></ul>
-    </details>
+let strictMode      = true;     // true = strict | false = smart
+const CHAT_TOLERANCE = 3;       // typo tolerance level
 
-    <details>
-      <summary><img src="Minecraft & MSM.png" alt="Minecraft">Minecraft</summary>
-      <ul>
-        <li><a href="https://mrniftyfire.github.io/Minecraft-Site/Minecraft%20Site.html">Minecraft Page</a></li>
-        <li><a href="https://mrniftyfire.github.io/Minecraft-Story-Mode/Minecraft%20Story%20Mode.html">MSM</a></li>
-        <li><a href="https://mrniftyfire.github.io/Every-Minecraft-Achievement/EMAP.html">Minecraft Achievements</a></li>
-      </ul>
-    </details>
 
-    <details>
-      <summary><img src="Chess (Small).png" alt="Chess">Chess</summary>
-      <ul><li><a href="https://mrniftyfire.github.io/Chess-Site/Chess%20site.html">Chess Page</a></li></ul>
-      <ul><li><a href="https://mrniftyfire.github.io/Chess-Achievements-Guide/CAP.html">Chess Achievements</a></li></ul>
-    </details>
 
-    <details>
-      <summary><img src="UV & Christianity.png" alt="UV & Christianity">UV & Christianity</summary>
-      <ul>
-      <li><a href="https://mrniftyfire.github.io/Uncommon-Videos/Random%20Page.html">Uncommon Videos</a></li>
-      <li><a href="https://mrniftyfire.github.io/Christianity-Site/Christianity.html">Christianity</a></li>
-      </ul>
-    </details>
+// =============================
+// 🎛 OPEN / CLOSE
+// =============================
 
-  </div>
-</div>
-  <script>
-    // Accordion: only one open at a time
-    const details = document.querySelectorAll("details");
-    details.forEach((targetDetail) => {
-      targetDetail.addEventListener("toggle", () => {
-        if (targetDetail.open) {
-          details.forEach((detail) => {
-            if (detail !== targetDetail) {
-              detail.open = false;
-            }
-          });
+chatToggle.onclick = (e) => {
+    e.stopPropagation();
+    chatbot.classList.toggle("open");
+};
+
+chatbot.addEventListener("click",  e => e.stopPropagation());
+chatToggle.addEventListener("click", e => e.stopPropagation());
+
+
+
+// ======================================================================
+// 🧠 LEVENSHTEIN ENGINE
+// ======================================================================
+
+function levenshtein(a, b) {
+
+    const matrix = [];
+
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+    for (let i = 1; i <= b.length; i++) {
+
+        for (let j = 1; j <= a.length; j++) {
+
+            matrix[i][j] =
+                b.charAt(i - 1) === a.charAt(j - 1)
+                    ? matrix[i - 1][j - 1]
+                    : Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                      );
         }
-      });
-    });
-  </script>
-
-</body>
-</html>
-
-
-<section style="background-image: url('PFP (New).png');">
-  <h1 style="color: white;"><h1>🎮 Welcome to the World of Mr Niftyfire! 🎮</h1>
-  <p style="color: white;">Hey there! I’m <b>Mr Niftyfire</b></p>
-  <p style="color: white;">
-<p>I'm a<I> chaotic good gamer from Australia</I> bringing you <b>Minecraft madness, chess challenges</b>, and a whole <U>lot of randomness</U>.
-    <br>I am <U>person of many of hobbies</U>, <u>like science or space</u>, <b>tell me a fact</b> or two
-    <br>I am sure <B>I will love it</B>, <I>especially if it's about black holes</I>.
-    <br><B>In this website</B> <b>you will find</b> information about
-    <br>What <u>type of person I am</u>
-    <br>What are the <u><b>type of videos I make</b></u>
-    <br>Where you can <B>get in touch with me</B>
-    <br>As well as <u>some facts about me you should know</u>.
-    <br>(maybe you with some luck <U><i><B>you can find something secret</B></i></U> too!)   
-  </p>
-</section>
-
-<section style="background-image: url('TUBGWAB\ Blurry\ Background.png');">
-  <h1 style="color: rgb(255, 255, 255);">Watch my trailer for more information!</h1>
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/wpEmsaYmwwk?si=S3HQrKjfD-hmCqse" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  <p><center>This will help you know what is on each page</center></p>
-</section>
-</style>
-
-<div id="chatbot-toggle">💬</div>
-
-<!-- CHATBOT -->
-<div id="chatbot">
-  <div id="chat-header">Site Helper</div>
-  <div id="chat-messages"></div>
-  <input id="chat-input" placeholder="Ask me something..." />
-</div>
-
-<section id="more-trailer-info" style="background-image: url('Website\ Sneak\ Peaks\ \(Blurred\).png');">
-  <h1 style="color: white;"><u>Website Sneak Peaks</u></h1>
-  <p style="color: white;">Click the images below to see different parts of the website!</p>
-
-  <img id="swapImage" src="Minecraft Achievements.png" alt="Trailer Image" width="600" style="border-radius: 12px; transition: opacity 0.5s ease; cursor: pointer;">
-</section>
-
-
-<section style="background-image: url('Hacking\ Background.png');">
-  <h1 style="color: white;">Fun Bobious Facts!</h1>
-  <h2 style="color: white;">I’m obsessed with hacks — I showcase the best ones.</h2>
-  <img src="Hacks.png" alt="Hacks">
-</section>
-
-<section style="background-image: url('Australian\ Background.png');">
-  <h2 style="color: white;">I live in Australia (yes, it’s real — and the spiders aren’t always huge!)</h2>
-  <img src="Australia.png" alt="Australia">
-</section>
-
-<section style="background-image: url('Flappy\ Bird\ Background.png');">
-  <h1 style="color: white; text-shadow: 2px 2px 6px black;">Flappy Bird</h1>
-  <p style="color: white;">Flappy Bird, the popular 2013 mobile arcade game where you can tap to make a bird flap between green pipes.</p>
-  <canvas id="flappyCanvas" width="400" height="600"
-    style="border: 4px solid white; border-radius: 16px; box-shadow: 0 0 25px rgba(255,255,255,0.3);
-           background: linear-gradient(to bottom, #87CEEB, #4DA1FF);">
-  </canvas>
-</section>
-
-<section style="background-image: url('Trailer\ Blurry\ Background.PNG');">
-  <h1 style="color: white;"><u>Watch My Trailer!</u></h1>
-  <iframe width="1120" height="630" src="https://www.youtube.com/embed/ZQTWZuX-c0w?si=3MrmSj-IvTBEdpg3" title="YouTube video player" allowfullscreen></iframe>
-</section>
-
-<section style="background-color: black; padding: 100px 20px; text-align: center;">
-  <h1 style="color: white; font-size: 4rem; margin-bottom: 40px;">
-    <u>My Subscriber Count!</u>
-  </h1>
-  <div id="subCount" style="
-      display: inline-flex;
-      align-items: center;
-      background-color: #ff0000;
-      color: white;
-      padding: 20px 40px;
-      border-radius: 50px;
-      font-size: 2.5rem;
-      font-weight: bold;
-      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
-      overflow: hidden;
-    ">
-    Loading...
-  </div>
-</section>
-
-<style>
-  .digit-container {
-    position: relative;
-    height: 2.5rem; /* same as font-size */
-    width: 1.5rem;   /* controls digit width, can adjust */
-    overflow: hidden;
-  }
-
-  .digit-strip {
-    position: absolute;
-    top: 0;
-    transition: top 0.5s ease-out;
-  }
-
-  .digit-strip div {
-    height: 2.5rem;
-    line-height: 2.5rem;
-    text-align: center;
-  }
-
-  .sub-text {
-    margin-left: 10px; /* spacing between number and "Subscribers" */
-    font-size: 2.5rem;
-    font-weight: bold;
-  }
-</style>
-
-<script>
-  let currentCount = 0;
-
-  function createDigitElements(number) {
-    return String(number).split('').map(digit => {
-      const container = document.createElement('div');
-      container.className = 'digit-container';
-
-      const strip = document.createElement('div');
-      strip.className = 'digit-strip';
-
-      // digits 0-9 repeated twice for smooth looping
-      for (let i = 0; i <= 19; i++) {
-        const d = document.createElement('div');
-        d.textContent = i % 10;
-        strip.appendChild(d);
-      }
-
-      container.appendChild(strip);
-      return container;
-    });
-  }
-
-  function updateCount(newCount) {
-    const container = document.getElementById('subCount');
-    const digits = String(newCount).split('');
-
-    // Rebuild digits if number of digits changed
-    if (container.querySelectorAll('.digit-container').length !== digits.length) {
-      container.innerHTML = '';
-      createDigitElements(newCount).forEach(d => container.appendChild(d));
-
-      const subText = document.createElement('div');
-      subText.className = 'sub-text';
-      subText.textContent = 'Subscribers';
-      container.appendChild(subText);
     }
 
-    // Animate each digit
-    Array.from(container.querySelectorAll('.digit-container')).forEach((digitContainer, i) => {
-      const digitStrip = digitContainer.querySelector('.digit-strip');
-      const targetDigit = parseInt(digits[i]);
-      digitStrip.style.top = `-${targetDigit * 2.5}rem`;
-    });
-
-    currentCount = newCount;
-  }
-
-  async function fetchSubs() {
-    try {
-      const response = await fetch("https://vercel-c4ld.vercel.app/api/subs", {
-        headers: { "Accept": "application/json" }
-      });
-      const data = await response.json();
-      const count = parseInt(data.subscribers) || 0;
-
-      if (count !== currentCount) {
-        updateCount(count);
-      }
-    } catch (err) {
-      console.error("Failed to load subscriber count:", err);
-      document.getElementById("subCount").innerText = "Failed to load";
-    }
-  }
-
-  // Initialize with 0
-  const container = document.getElementById('subCount');
-  container.innerHTML = '';
-  createDigitElements(0).forEach(d => container.appendChild(d));
-
-  const subText = document.createElement('div');
-  subText.className = 'sub-text';
-  subText.textContent = 'Subscribers';
-  container.appendChild(subText);
-
-  fetchSubs();
-  setInterval(fetchSubs, 10000);
-</script>
+    return matrix[b.length][a.length];
+}
 
 
 
+// =============================
+// 🧠 KNOWN PHRASES
+// =============================
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+const knownTriggers = [
+
+    "hello",
+    "how do i navigate the website",
+    "how can i contact help",
+    "can you tell me something about this website",
+    "play",
+    "game",
+    "flappy",
+    "score",
+    "restart",
+    "music",
+    "bug",
+    "mobile",
+    "keyboard",
+    "about",
+    "who made"
+
+];
+
+
+
+function findClosestMatch(input) {
+
+    let closest = null;
+    let minDist = Infinity;
+
+    for (let phrase of knownTriggers) {
+
+        const dist = levenshtein(input, phrase);
+
+        if (dist < minDist) {
+            minDist = dist;
+            closest = phrase;
+        }
     }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: black;
+    return minDist <= CHAT_TOLERANCE ? closest : null;
+}
+
+
+
+// ======================================================================
+// ✨ TYPING EFFECT (HTML SAFE)
+// ======================================================================
+
+function typeEffect(element, html, speed = 15) {
+
+    let i = 0;
+    element.innerHTML = "";
+
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+    const fullText = temp.innerHTML;
+
+    const interval = setInterval(() => {
+
+        element.innerHTML = fullText.slice(0, i);
+        i++;
+
+        if (i > fullText.length) clearInterval(interval);
+
+    }, speed);
+}
+
+
+
+
+
+function addChat(sender, text) {
+
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${sender === "You" ? "user" : "bot"}`;
+
+    chatMessages.appendChild(bubble);
+
+    if (sender === "Bot") {
+        typeEffect(bubble, text);
+    } else {
+        bubble.innerHTML = text;   // allows <b>
     }
 
-    section {
-      width: 100%;
-      min-height: 100vh;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 50px 20px;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  const chatToggle   = document.getElementById("chatbot-toggle");
+  const chatbot      = document.getElementById("chatbot");
+  const chatInput    = document.getElementById("chat-input");
+  const chatMessages = document.getElementById("chat-messages");
+
+  if (!chatInput || !chatMessages) return;
+
+  chatInput.addEventListener("keydown", (e) => {
+
+    if (e.key === "Enter") {
+
+      e.preventDefault();
+
+      const userText = chatInput.value.trim();
+      if (!userText) return;
+
+      addChat("You", userText);
+      chatInput.value = "";
+
+      const reply = getReply(userText);
+
+      setTimeout(() => {
+        addChat("Bot", reply);
+      }, 200);
     }
 
-    h1, h2, p {
-      padding: 10px 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
+  });
+
+});
+
+
+
+
+const customResponses = {
+    "who is the owner": "The owner is Mr Niftyfire 👑",
+    "contact": "Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "play": "Tap, click, or press to play flappy bird. Avoid pipes! 🎮",
+    "secret": "🤫 This website leads you somewhere special <br> https://whatthezbot.github.io <br> /IDK/Secret-Page.html",
+    "hi": "Hey! 👋 I can help you navigate, report issues, or find out info about the website. Just ask how to get to another page or asking about info on the site or how to report issues.",
+    "favorite color": "My favorite color is red!",
+    "navigate": "Press the one of the icons on the menu bar and then press the text that pops up below the icon.",
+    "other pages": "Press the one of the icons on the menu bar and then press the text that pops up below the icon.",
+    "secret page": "This website leads you somewhere special <br> https://whatthezbot.github.io <br> /IDK/Secret-Page.html",
+    "issue": "Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "report issue": "Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "updates": "This site is still being worked on for mobile, stay tuned for updates.",
+    "best video": "I really like my videos, my best one by far is my trailer",
+    "favourite video": "I really like my videos, my best one by far is my trailer",
+    "favorite video": "I really like my videos, my best one by far is my trailer",
+    "you real": "If you're wondering, I am automated.",
+    "real person": "If you're wondering, I am automated.",
+    "you real?": "If you're wondering, I am automated.",
+    "help": "What do you need help with?",
+    "info": "This site has was made with HTML CSS and Javascript and was made out of passion and love",
+    "pixar": "I am planning to make a movie review on all the movies",
+    "67": "67",
+    "score": "You get points by passing pipes 🏆",
+    "restart": "Tap or press <b>Space</b> after Game Over.",
+    "music": "Use the <b>music button</b> at the bottom right to turn on the music 🎵.",
+    "bug": "To report a bug to this email mrniftyfireofficial<br>@outlook.com",
+    "who made": "This site was made by Mr Niftyfire 👑",
+    "home page": "Press the home icon on the menu bar and then press the text that pops up below the icon.",
+    "lego page": "Press the lego icon on the menu bar and then press the text that pops up below the icon.",
+    "roblox page": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "gd page": "Press the GD icon on the menu bar and then press the text that pops up below the icon.",
+    "gemoetry dash page": "Press the GD icon on the menu bar and then press the text that pops up below the icon.",
+    "duolingo page": "Press the duolingo icon on the menu bar and then press the text that pops up below the icon.",
+    "duolingo achievements page": "Press the duolingo achievements icon on the menu bar and then press the text that pops up below the icon.",
+    "blooket page": "Press the blooket icon on the menu bar and then press the text that pops up below the icon.",
+    "Get every blook page": "Press the Get every blook icon on the menu bar and then press the text that pops up below the icon.",
+    "HTGEB page": "Press the Get every blook icon on the menu bar and then press the text that pops up below the icon.",
+    "blooket calculator page": "Press the blooket calculator icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft page": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft story mode": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "msm": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft achievements page": "Press the min t icon on the menu bar and then press the text that pops up below the icon.",
+    "chess page": "Press the chess icon on the menu bar and then press the text that pops up below the icon.",
+    "chess achievements page": "Press the chess achievements icon on the menu bar and then press the text that pops up below the icon.",
+    "christianity page": "Press the christianity icon on the menu bar and then press the text that pops up below the icon.",
+    "uncommon videos page": "Press the uncommon videos icon on the menu bar and then press the text that pops up below the icon.",
+    "uv page": "Press the uncommon videos icon on the menu bar and then press the text that pops up below the icon.",
+    "time to create": "This website is still being developed but it has been worked on for over 9 months",
+    "time to make": "This website is still being developed but it has been worked on for over 9 months",
+    "time to code": "This website is still being developed but it has been worked on for over 9 months",
+    "take to make": "This website is still being developed but it has been worked on for over 9 months",
+    "take to code": "This website is still being developed but it has been worked on for over 9 months",
+    "how does the website work": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "how does the site work": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "how was the website made": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "website made": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "site made": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "wesite works": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "site works": "It works with HTML, CSS and Javascript and was made out of passion and love",
+    "specific": "For more specific answers Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "be specific": "For more specific answers Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "what's this website info about": "Its about my videos, channel and more!",
+    "site info": "Its about my videos, channel and more! ",
+    "type of content": "I make a variaty of videos, like videos about minecraft!",
+    "type of videos": "I make a variaty of videos, like videos about minecraft!",
+    "style of videos": "I make a variaty of videos, like videos about minecraft!",
+    "style of content": "I make a variaty of videos, like videos about minecraft!",
+    "what does the website include": "Its about my videos, channel and more!",
+    "what does the site include": "Its about my videos, channel and more!",
+    "site include": "Its about my videos, channel and more!",
+    "website include": "Its about my videos, channel and more!",
+    "what does the website have": "Its about my videos, channel and more!",
+    "what does the site have": "Its about my videos, channel and more!",
+    "website have": "Its about my videos, channel and more!",
+    "site have": "Its about my videos, channel and more!",
+    "what is on the site": "Stuff like my videos, channel and more!",
+    "what is on the website": "Stuff like my videos, channel and more!",
+    "on the site": "Stuff like my videos, channel and more!",
+    "on the website": "Stuff like my videos, channel and more!",
+    "videos about": "I make a variaty of videos, like videos about minecraft!",
+    "suggestions": "To give suggestions Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "suggestion": "To give suggestions Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "questions": "To ask questions Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "question": "To ask questions Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "copywrite": "To ask about issues you have Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "complaints": "To ask about issues you have Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "complain": "To ask about issues you have Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "complains": "To ask about issues you have Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "complaint": "To ask about issues you have Contact 👉 mrniftyfireofficial<br>@outlook.com.",
+    "joke": "Why did the chicken cross the road, to get to the other side!!!!!",
+    "mr niftyfire": "No, this is automated",
+    "thanks": "Your welcome!",
+    "thank you": "Your welcome!",
+    "tysm": "Your welcome!",
+    "ty": "Your welcome!",
+    "subscriber count": "Scroll down to the bottom on the home page to see how manys subs I have!",
+    "subscriber": "Scroll down to the bottom on the home page to see how manys subs I have!",
+    "subscribers": "Scroll down to the bottom on the home page to see how manys subs I have!",
+    "home": "Press the home icon on the menu bar and then press the text that pops up below the icon.",
+    "lego": "Press the lego icon on the menu bar and then press the text that pops up below the icon.",
+    "roblox": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "gd": "Press the GD icon on the menu bar and then press the text that pops up below the icon.",
+    "gemoetry dash": "Press the GD icon on the menu bar and then press the text that pops up below the icon.",
+    "duolingo": "Press the duolingo icon on the menu bar and then press the text that pops up below the icon.",
+    "duolingo achievements": "Press the duolingo achievements icon on the menu bar and then press the text that pops up below the icon.",
+    "blooket": "Press the blooket icon on the menu bar and then press the text that pops up below the icon.",
+    "Get every blook": "Press the Get every blook icon on the menu bar and then press the text that pops up below the icon.",
+    "HTGEB": "Press the Get every blook icon on the menu bar and then press the text that pops up below the icon.",
+    "blooket calculator": "Press the blooket calculator icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft story mode": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "msm": "Press the minecraft icon on the menu bar and then press the text that pops up below the icon.",
+    "minecraft achievements": "Press the min t icon on the menu bar and then press the text that pops up below the icon.",
+    "chess": "Press the chess icon on the menu bar and then press the text that pops up below the icon.",
+    "chess achievements": "Press the chess achievements icon on the menu bar and then press the text that pops up below the icon.",
+    "christianity": "Press the christianity icon on the menu bar and then press the text that pops up below the icon.",
+    "uncommon videos": "Press the uncommon videos icon on the menu bar and then press the text that pops up below the icon.",
+    "uv page": "Press the uncommon videos icon on the menu bar and then press the text that pops up below the icon.",
+}
+
+
+
+
+
+function getReply(msg) {
+
+    msg = msg.toLowerCase().trim();
+    // ======================================
+// ⭐ CHECK CUSTOM RESPONSES FIRST
+// ======================================
+
+for (let trigger in customResponses) {
+    if (msg.includes(trigger)) {
+        return customResponses[trigger];
+    }
+}
+
+
+
+
+    // =============================
+    // 🔄 MODE SWITCH COMMAND
+    // =============================
+
+    if (msg === "/mode") {
+
+        strictMode = !strictMode;
+
+        return `Mode switched to <b>${strictMode ? "STRICT" : "SMART"}</b>`;
     }
 
-    img {
-      max-width: 80%;
-      height: auto;
-      margin: 20px 0;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+
+    // =============================
+    // 🧠 SMART MATCH CHECK
+    // =============================
+
+    const suggestion = findClosestMatch(msg);
+
+    if (!knownTriggers.some(trigger => msg.includes(trigger))) {
+
+        if (strictMode) {
+
+            if (suggestion) {
+                return `❌ I didn’t understand, please use proper spelling`;
+            }
+
+            return "❌ I’m not sure 🤔<br><br>Try:<br><b>How can I contact help</b><br><b>How do I navigate the website</b><br>Or contact mrniftyfireofficial<br>@outlook.com.";
+        }
+
+        if (suggestion) {
+            msg = suggestion;   // auto-correct in smart mode
+        }
     }
 
-    .hover-link {
-      text-decoration: none;
-      color: inherit;
-      transition: color 0.2s ease;
-    }
 
-    .hover-link:hover {
-      color: #570080;
-      cursor: pointer;
-    }
 
-    iframe {
-      border-radius: 12px;
-      margin: 30px 0;
-    }
+    // ==================================================================
+    // 💬 RESPONSES
+    // ==================================================================
 
-    .get-in-touch {
-      display: inline-block;
-      animation: pulse 2s infinite;
-      transition: transform 0.3s ease;
-    }
+if (msg.includes("hello"))
+        return "Hey! 👋 I can help you navigate, report issues, or find out info about the website. Just ask how to get to another page or asking about info on the site or how to report issues.";
 
-    .get-in-touch:hover {
-      transform: scale(1.1);
-      text-decoration: underline;
-    }
+    if (msg.includes("how do i navigate the website"))
+        return "Press the one of the icons on the menu bar and then press the text below.";
 
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.6; }
-      100% { opacity: 1; }
-    }
-  </style>
+    if (msg.includes("how can i contact help"))
+        return "Contact 👉 mrniftyfireofficial<br>@outlook.com";
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Fredoka', sans-serif;
-      background-image: url('Math Background.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: white;
-      text-shadow: 2px 2px 4px black;
-    }
+    if (msg.includes("can you tell me something about this website"))
+        return "This website is made using <b>HTML</b>, <b>CSS</b>, and <b>JavaScript</b>.";
 
-    .top-menu {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      background-color: #111;
-      padding: 10px 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-    }
+    if (msg.includes("play") || msg.includes("game") || msg.includes("flappy"))
+        return "Tap, click, or press to play flappy bird. Avoid pipes! 🎮";
 
-    .top-menu a {
-      color: white;
-      text-decoration: none;
-      text-align: center;
-      font-size: 14px;
-      transition: 0.3s;
-    }
+    if (msg.includes("score"))
+        return "You get points by passing pipes 🏆";
 
-    .top-menu a:hover {
-      color: #ffffff;
-    }
+    if (msg.includes("restart"))
+        return "Tap or press <b>Space</b> after Game Over.";
 
-    .top-menu img {
-      width: 30px;
-      height: 30px;
-      display: block;
-      margin: 0 auto 5px;
-      transition: transform 0.3s ease, filter 0.3s ease;
-    }
+    if (msg.includes("music"))
+        return "Use the <b>music button</b> at the bottom right to turn on the music 🎵";
 
-    .top-menu a:hover img {
-      filter: brightness(1.5);
-      transform: scale(1.1);
-    }
+    if (msg.includes("bug"))
+        return "To report a bug to this email mrniftyfireofficial<br>@outlook.com";
 
-    body::before {
-      content: "";
-      display: block;
-      height: 60px;
-    }
-  </style>
-</head>
+    if (msg.includes("mobile"))
+        return "This site is still being worked on for mobile, stay tunned for updates!";
 
-<body>
+    if (msg.includes("keyboard"))
+        return "Controls:<br>• <b>Space</b> = Fly<br>• Click / Tap = Fly";
 
-</body>
-</html>
+    if (msg.includes("about"))
+        return "This site has was made with HTML CSS and Javascript";
+
+    if (msg.includes("who made"))
+        return "This site was made by the site Mr Niftyfire 👑";
+
+if (msg.includes("updates"))
+        return "This site is still being worked on for mobile, stay tunned for updates";
+ 
+if (msg.includes("secrets"))
+        return "🤫 This website leds you somewhere special <br> https://whatthezbot.github.io <br> /IDK/Secret-Page.html"
 
 
 
+    return "I’m not sure 🤔";
+}
+
+
+
+
+
+chatInput.addEventListener("focus", () => {
+  isChatFocused = true;
+});
+
+chatInput.addEventListener("blur", () => {
+  isChatFocused = false;
+});
+
+
+
+
+
+
+addChat("Bot", "Hi! Try saying <b>Hello</b> 😊 (try use correct spelling) ");
