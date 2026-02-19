@@ -1,4 +1,4 @@
-
+// === Image Switcher (not affected by other buttons) ===
 
 const trailerImages = [
   "Minecraft Achievements.png",
@@ -635,7 +635,7 @@ for (let trigger in customResponses) {
                 return `❌ I didn’t understand, please use proper spelling`;
             }
 
-            return "❌ I’m not sure 🤔<br><br>Try:<br><b>How can I contact help</b><br><b>How do I navigate the website</b><br>Or contact mrniftyfireofficial<br>@outlook.com.";
+            return "❌ I’m not sure 🤔<br><br>Try Asking:<br><b>How can I contact help</b><br><b>How do I navigate the website</b><br><b>Or</b> contacting mrniftyfireofficial<br>@outlook.com. <b>Checking Spelling<b>";
         }
 
         if (suggestion) {
