@@ -635,7 +635,7 @@ for (let trigger in customResponses) {
                 return `❌ I didn’t understand, please use proper spelling`;
             }
 
-            return "❌ I’m not sure 🤔<br><br>Try Asking:<br><b>How can I contact help</b><br><b>How do I navigate the website</b><br><b>Or</b> contacting mrniftyfireofficial<br>@outlook.com. <b>Checking Spelling<b>";
+            return "❌ I’m not sure 🤔<br><br>Try Asking:<br><b>How can I contact help</b><br><b>How do I navigate the website</b><br><b>Or</b> <br>contacting mrniftyfireofficial<br>@outlook.com. <br> <b>Checking Spelling<b>";
         }
 
         if (suggestion) {
