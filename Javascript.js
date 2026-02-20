@@ -662,7 +662,7 @@ if (msg.includes("hello"))
         return "This website is made using <b>HTML</b>, <b>CSS</b>, and <b>JavaScript</b>.";
 
     if (msg.includes("play") || msg.includes("game") || msg.includes("flappy"))
-        return "Tap, click, or press to play flappy bird. Avoid pipes! 🎮";
+        return "Scroll down on the home page to find flappy bird. Tap, click, or press to play flappy bird. Avoid pipes! 🎮";
 
     if (msg.includes("score"))
         return "You get points by passing pipes 🏆";
