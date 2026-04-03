@@ -1,12 +1,12 @@
 // === Image Switcher (not affected by other buttons) ===
 
 const trailerImages = [
-  "Minecraft Achievements.png",
-  "Blooket Calculator.png",
-  "Chess Achievements.png",
-  "Blooket Blooks.png",
-  "Duolingo Achievements.png",
-  "MSM.png"
+  "Preview Minecraft Achievements.png",
+  "Preview Blooket Calculator.png",
+  "Preview Chess Achievements.png",
+  "Preview Blooket Blooks.png",
+  "Preview Duolingo Achievements.png",
+  "Preview MSM.png"
 ];
 let isChatFocused = false;
 
