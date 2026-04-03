@@ -277,14 +277,14 @@ iframe {
   font-weight: bold;
   box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
   overflow: hidden;
-  gap: 10px;
+  gap: 2.65px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .digit-container {
   position: relative;
-  height: 2.5rem;
+  height: 2.4rem;
   width: 1.5rem;
   overflow: hidden;
 }
