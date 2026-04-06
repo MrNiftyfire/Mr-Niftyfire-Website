@@ -29,10 +29,7 @@ The website includes (or will include) pages for:
 - Duolingo  
 - Geometry Dash (GD)  
 - Chess  
-- LEGO & Stop Motion  
-- Among Us  
-- Prodigy  
-- Pocket Champs  
+- LEGO & Stop Motion 
 - Christianity
 - “Uncommon Videos”  
 - And more as the site grows
