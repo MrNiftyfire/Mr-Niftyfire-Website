@@ -129,7 +129,7 @@ iframe {
   color: white;
   text-decoration: none;
   display: block;
-  padding: 8px 12px;
+  padding: 3.5px 12px;
   transition: 0.25s;
   white-space: nowrap;
 }
